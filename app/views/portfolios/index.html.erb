@@ -1,0 +1,82 @@
+
+<%= form_for @investment, :html => {:class => ""}, :remote => true do |f| %>
+	<%= f.label :investment_date, "Investment Date", class: "" %>
+	<%= f.date_field :investment_date, max: Date.today, min: "2015-04-01",:required => true %>
+  	<%= f.label :investment_date, "Amount", class: "" %>
+   	<%= f.number_field :amount, min: 100,:required => true %>
+  	<%= f.label :fund, "Fund", class: "" %>	
+	<%= f.select(:scheme_code, get_scheme_name_code, { :include_blank => '-- Select A Fund --' }, :required => true) %>
+  	<%= f.submit 'Save Investment', :id=> 'investment_submit', :class=>"btn btn-info" %>
+<% end %>
+
+
+
+<table border="1" id="investments_table" class="table-striped table-hover table-responsive ">
+	<th>Scheme</th>
+	<th>Amount</th>
+	<th>Date</th>
+	<th>Unit Allotted</th>
+	<th>Current Value</th>
+<% Investment.find_each do |investment| %>
+<tr class="investment_tr">
+	<td><%=investment.scheme_name %></td>
+	<td><%=investment.amount %></td>
+	<td><%=investment.investment_date %></td>
+	<td><%=investment.units_allotted %></td>
+	<td><%=investment.current_value %></td>
+</tr>
+<% end %>
+<tr>
+	<td>Total</td>
+	<td><%=Investment.sum(:amount)%></td>
+	<td colspan="2">Current Value</td>
+	<td><%=Investment.present_investment_value%></td>
+</tr>
+</table>
+
+<style>
+	#investments_table{
+		text-align: center;
+		width: 100%;
+	}
+	th{
+		text-align: center;
+	}
+</style>
+
+<script>
+	 $(document).ready(function() { $('#investment_scheme_code').select2(); });
+	 $('#new_investment').on ('ajax:send', showLoader);
+	 $('#new_investment').on ('ajax:success', performTask);
+	 $('#new_investment').on ('ajax:complete', hideLoader);
+
+
+function performTask(event, data) {
+	reset_form();
+	addRow(event, data);
+}
+function reset_form() {
+	$("#investment_investment_date").val('');
+	$("#investment_amount").val('');
+	$("#investment_scheme_code").val('').trigger('change');
+}
+
+function addRow(event, data) {
+	var investment_row = '<tr>'+
+      '<td>'+data.scheme_name+'</td>'+
+      '<td>'+data.amount+'</td>'+
+      '<td>'+data.investment_date+'</td>'+
+      '<td>'+data.units_allotted+'</td>'+
+      '<td>'+data.current_value+'</td>'+
+      '</tr>';
+    var total_row = '<tr>'+
+      '<td>Total</td>'+
+      '<td>'+data.investment_amount+'</td>'+
+      '<td colspan="2">Current Value</td>'+
+      '<td>'+data.total_current_value+'</td>'+
+      '</tr>';
+    $('#investments_table tr:last').remove();
+	$('#investments_table > tbody:last').append(investment_row);
+	$('#investments_table > tbody:last').append(total_row);
+}
+</script>

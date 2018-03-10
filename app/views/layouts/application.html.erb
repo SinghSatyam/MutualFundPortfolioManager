@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kuvera Portfolio Management</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+<%= yield %>
+<div id="overlayLoader" class="hidden" style="height: 100%;min-height:100vh; width:100%; position: fixed; left: 0;top: 0;background: white; opacity: 0.8; z-index:999;text-align:center;">
+          <div class="spinner" style="margin-top: 10em;">
+            <img src="https://assets.kuvera.in/production/atlantis/web/assets/img/loading.svg">
+          </div>
+        </div>
+</body>
+</html>
